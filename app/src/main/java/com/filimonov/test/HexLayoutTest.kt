@@ -15,7 +15,7 @@ import com.filimonov.hexlayout.items
 
 @Composable
 fun HexLayoutTest() {
-    val circles = 5
+    val circles = 3
     val list = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 
     HexLayout(circles = circles) {

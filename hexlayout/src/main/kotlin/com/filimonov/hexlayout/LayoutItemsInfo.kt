@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.util.lerp
-import com.filimonov.hexlayout.parameters.HexParameters
 import com.filimonov.hexlayout.parameters.LayoutParameters
 import com.filimonov.hexlayout.parameters.ScalingParameters
 import com.filimonov.hexlayout.positioning.HexPositionCalculator
@@ -14,22 +13,28 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 import kotlin.math.hypot
 
+/**
+ *  Helper class that store visible items positions and scale
+ *  @param visibleBounds bounds in which items info will calculated
+ *  @param layoutParameters layout parameters
+ *  @param hexPositionCalculator hex position calculator
+ *  @param scalingParameters describe how to scale items from center to edges
+ */
 internal class LayoutItemsInfo(
     private val visibleBounds: Bounds,
     private val layoutParameters: LayoutParameters,
     private val hexPositionCalculator: HexPositionCalculator,
     private val scalingParameters: ScalingParameters
-) {
-    private val hexParameters: HexParameters = hexPositionCalculator.hexParameters
+) : IMeasureResultConsumer {
     private var dragged: IntOffset by mutableStateOf(IntOffset.Zero)
-    private var centerHex: HexPosition by mutableStateOf(HexPosition.Zero)
+    private var centerHexPosition: HexPosition by mutableStateOf(HexPosition.Zero)
 
     val itemsInfo: ImmutableMap<HexPosition, ItemInfo> by derivedStateOf {
         buildMap {
             visibleBounds.horizontal.forEach { column ->
                 visibleBounds.vertical.forEach { row ->
-                    val centeredColumn = centerHex.column + column
-                    val centeredRow = centerHex.row + row
+                    val centeredColumn = centerHexPosition.column + column
+                    val centeredRow = centerHexPosition.row + row
 
                     val position = dragged + layoutParameters.center + hexPositionCalculator.getPosition(centeredColumn, centeredRow)
 
@@ -40,7 +45,7 @@ internal class LayoutItemsInfo(
                     put(
                         key = HexPosition(centeredColumn, centeredRow),
                         value = ItemInfo(
-                            position = position - hexParameters.offset,
+                            position = position - hexPositionCalculator.hexParameters.offset,
                             scale = scale
                         )
                     )
@@ -49,9 +54,9 @@ internal class LayoutItemsInfo(
         }.toImmutableMap()
     }
 
-    fun applyMeasureResult(dragged: IntOffset, centerHex: HexPosition) {
-        this.dragged = dragged
-        this.centerHex = centerHex
+    override fun applyMeasureResult(measureResult: HexLayoutMeasureResult) {
+        this.dragged = measureResult.dragged
+        this.centerHexPosition = measureResult.centerHexPosition
     }
 }
 

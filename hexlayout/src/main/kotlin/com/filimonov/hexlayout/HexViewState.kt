@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.round
 /**
  * Represents drag state of hex layout
  */
-internal class HexViewState {
+internal class HexViewState : IMeasureResultConsumer {
     var dragged by mutableStateOf(IntOffset.Zero)
         private set
 
@@ -54,14 +54,10 @@ internal class HexViewState {
         }.also { it.start() }
     }
 
-    /**
-     * Updates information about center hex after each measure
-     */
-    @JvmName("setCenterHex") // todo: rename to applyMeasureResult
-    fun setCenter(centerHexPosition: HexPosition, centerHexCoordinates: IntOffset) {
-        if (this.centerHexPosition != centerHexPosition) {
-            this.centerHexPosition = centerHexPosition
-            this.centerHexCoordinates = centerHexCoordinates
+    override fun applyMeasureResult(measureResult: HexLayoutMeasureResult) {
+        if (centerHexPosition != measureResult.centerHexPosition) {
+            centerHexPosition = measureResult.centerHexPosition
+            centerHexCoordinates = measureResult.centerHexCoordinates
         }
     }
 }

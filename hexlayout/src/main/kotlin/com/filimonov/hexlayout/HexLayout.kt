@@ -16,13 +16,6 @@ import com.filimonov.hexlayout.utils.circularList
 import com.filimonov.hexlayout.utils.findMatrixSizeMoreThan
 import kotlin.math.max
 
-/*
-    TODO:
-        add custom MeasureResult
-        add FlatTopHexPositionCalculator
-        add customizing scaler (scale by circles for example)
-*/
-
 /**
  * Hexagonal grid layout.
  * The [content] block defines a DSL which allows you to emit items of different types.
@@ -90,35 +83,42 @@ fun HexLayout(
                     with(CachingMeasurementScope(itemProvider, layoutItemsInfo, this)) {
                         val dragged = state.dragged
                         val center = state.centerHexPosition
-                        val itemConstraints = positionCalculator.hexParameters.constraints
 
-                        layout(width = constraints.maxWidth, height = constraints.maxHeight) {
-                            visibleBounds.horizontal.forEach { column ->
-                                visibleBounds.vertical.forEach { row ->
-                                    val centeredColumn = center.column + column
-                                    val centeredRow = center.row + row
-                                    val hexColumnRow = HexPosition(centeredColumn, centeredRow)
+                        val newCenterHex = positionCalculator.getCenterHex(-dragged)
 
-                                    val position = layoutItemsInfo.itemsInfo[hexColumnRow]?.position
-                                    if (position != null) {
-                                        val normalizedColumn = normalizerList[centeredColumn]
-                                        val normalizedRow = normalizerList[centeredRow]
-                                        val key = HexPosition(normalizedColumn, normalizedRow)
+                        HexLayoutMeasureResult(
+                            dragged = dragged,
+                            centerHexPosition = newCenterHex,
+                            centerHexCoordinates = positionCalculator.getPosition(newCenterHex.column, newCenterHex.row),
+                            measureResult = layout(width = constraints.maxWidth, height = constraints.maxHeight) {
+                                visibleBounds.horizontal.forEach { column ->
+                                    visibleBounds.vertical.forEach { row ->
+                                        val centeredColumn = center.column + column
+                                        val centeredRow = center.row + row
+                                        val hexColumnRow = HexPosition(centeredColumn, centeredRow)
 
-                                        measure(
-                                            key = key,
-                                            position = hexColumnRow,
-                                            constraints = itemConstraints
-                                        ).map { it.place(position) }
+                                        val position = layoutItemsInfo.itemsInfo[hexColumnRow]?.position
+                                        if (position != null) {
+                                            val normalizedColumn = normalizerList[centeredColumn]
+                                            val normalizedRow = normalizerList[centeredRow]
+                                            val key = HexPosition(normalizedColumn, normalizedRow)
+
+                                            measure(
+                                                key = key,
+                                                position = hexColumnRow,
+                                                constraints = positionCalculator.hexParameters.constraints
+                                            ).map { it.place(position) }
+                                        }
                                     }
                                 }
                             }
-                        }.also {
-                            val newCenterHex = positionCalculator.getCenterHex(-dragged)
-                            val newCenterCoordinates = positionCalculator.getPosition(newCenterHex.column, newCenterHex.row)
-                            state.setCenter(newCenterHex, newCenterCoordinates)
-                            layoutItemsInfo.applyMeasureResult(dragged, newCenterHex)
-                        }
+                        )
+                    }.also {
+                        // update center hex in state
+                        state.applyMeasureResult(it)
+
+                        // update position and scale of hexes
+                        layoutItemsInfo.applyMeasureResult(it)
                     }
                 }
             }
