@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "HexLayout"
 include ':app'
 include ':hexlayout'
+include ':benchmark'

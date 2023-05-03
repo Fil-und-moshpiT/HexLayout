@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HexLayout"
         tools:targetApi="31">
+
+        <profileable
+            android:shell="true"
+            tools:targetApi="31" />
+
         <activity
             android:name="com.filimonov.test.MainActivity"
             android:exported="true"
