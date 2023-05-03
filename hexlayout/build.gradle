@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.library' version '8.0.0'
+    id 'org.jetbrains.kotlin.android' version '1.8.20'
+}
+
+android {
+    namespace 'com.filimonov.hexview'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+    }
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.4.6"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+}
+
+dependencies {
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.foundation:foundation:$compose_version"
+    implementation "androidx.compose.ui:ui-util:$compose_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
+}
