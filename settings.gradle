@@ -1,18 +1,30 @@
 pluginManagement {
+    plugins {
+        id 'com.android.application' version '8.0.0'
+        id 'com.android.library' version '8.0.0'
+        id 'com.android.test' version '8.0.0'
+
+        id 'org.jetbrains.kotlin.android' version '1.8.20'
+    }
+
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
     repositories {
         google()
         mavenCentral()
     }
 }
+
 rootProject.name = "HexLayout"
+
 include ':app'
 include ':hexlayout'
 include ':benchmark'

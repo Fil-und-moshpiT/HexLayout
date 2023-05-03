@@ -1,11 +1,6 @@
 buildscript {
     ext {
         compose_version = '1.4.2'
+        compose_compiler_version = '1.4.6'
     }
-}
-
-plugins {
-    id 'com.android.application' version '8.0.0' apply false
-    id 'com.android.library' version '8.0.0' apply false
-    id 'com.android.test' version '8.0.0' apply false
 }
